@@ -8,10 +8,14 @@ input - logfile path
 
 output - (Optional) Output folder location
 
-<h2>To run the file</h2>
+<h2>To run the .bal file</h2>
 
 <code>bal run \<file\> -- --input=\<logFilePath\> --output=\<outputFolderPath\></code>
 
 <h2>To build</h2>
 
 <code>bal build</code>
+
+<h2>To run the .jar file</h2>
+
+<code>bal run \<file\> --input=\<logFilePath\> --output=\<outputFolderPath\></code>
