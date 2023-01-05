@@ -38,7 +38,6 @@ public function main(*Args options) returns error? {
         check file:remove(outputPath);
     }
     check file:create(outputPath);
-    string finalOutput = outputPath;
 
     // Performs read operation to the file.
     stream<string, io:Error?> lineStream = check io:fileReadLinesAsStream(input);
@@ -55,19 +54,19 @@ public function main(*Args options) returns error? {
         // If line is an error line, log to the file
         if isErrorline is true {
             do {
-                check io:fileWriteString(finalOutput, val, "APPEND");
+                check io:fileWriteString(outputPath, val, "APPEND");
             } on fail var e {
                 io:println("Error occured in writing to the file. ", e);
             }
             do {
-                check io:fileWriteString(finalOutput, "\n", "APPEND");
+                check io:fileWriteString(outputPath, "\n", "APPEND");
             } on fail var e {
                 io:println("Error occured in writing to the file. ", e);
             }
         }
     });
 
-    io:println("Errors filtered into the file in ", finalOutput);
+    io:println("*** Errors filtered into the file in ", outputPath);
 
     if result0 is error {
         io:println("Error occured in writing to the file.");
