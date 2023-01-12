@@ -45,9 +45,9 @@ public function main(*Args options) returns error? {
     // Iterates through the stream and prints the content.
     boolean isErrorline = false;
     io:Error? result0 = check lineStream.forEach(function(string val) {
-        if val.includes("[] ERROR") {
+        if (val.startsWith("TID:") && val.includes("] ERROR {")) {
             isErrorline = true;
-        } else if val.includes("TID: [] []") {
+        } else if val.startsWith("TID:") {
             isErrorline = false;
         }
 
