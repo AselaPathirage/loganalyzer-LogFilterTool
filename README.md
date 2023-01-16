@@ -8,9 +8,11 @@ input - logfile path
 
 output - (Optional) Output folder location
 
+debug - (Optional) Include the errors in the DEBUG level (Default is false)
+
 <h2>To run the .bal file</h2>
 
-<code>bal run \<file\> -- --input=\<logFilePath\> --output=\<outputFolderPath\></code>
+<code>bal run \<file\> -- --input=\<logFilePath\> --output=\<outputFolderPath\> --debug=\<true|false\></code>
 
 <h2>To build</h2>
 
@@ -18,4 +20,4 @@ output - (Optional) Output folder location
 
 <h2>To run the .jar file</h2>
 
-<code>bal run \<file\> --input=\<logFilePath\> --output=\<outputFolderPath\></code>
+<code>bal run \<file\> --input=\<logFilePath\> --output=\<outputFolderPath\> --debug=\<true|false\></code>

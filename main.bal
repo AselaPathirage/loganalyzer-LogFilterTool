@@ -6,16 +6,19 @@ import ballerina/file;
 # Passing the default arguments.
 # + input - Log file path
 # + output - (Optional) Output file folder location
+# + debug - (Optional) Include the errors in the DEBUG level
 #
 public type Args record {
     string input;
     string? output;
+    string? debug;
 };
 
 public function main(*Args options) returns error? {
     // Initializes the text path and the content.
     string input = options?.input;
     string output = options?.output ?: "FilteredOutput";
+    boolean debug = (options?.debug ?: "false").equalsIgnoreCaseAscii("true") ? true : false;
 
     // Gets filename.
     string[] pathArray = check file:splitPath(input);
@@ -46,6 +49,8 @@ public function main(*Args options) returns error? {
     boolean isErrorline = false;
     io:Error? result0 = check lineStream.forEach(function(string val) {
         if (val.startsWith("TID:") && val.includes("] ERROR {")) {
+            isErrorline = true;
+        } else if (debug && val.startsWith("TID:") && val.includes("] DEBUG {") && val.includes("- Error")) {
             isErrorline = true;
         } else if val.startsWith("TID:") {
             isErrorline = false;
