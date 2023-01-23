@@ -1,26 +1,34 @@
 import ballerina/io;
 import ballerina/file;
+import ballerina/regex;
 
 # Author - Asela Pathirage (Intern)
 #
 # Passing the default arguments.
 # + input - Log file path
 # + output - (Optional) Output file folder location
-# + debug - (Optional) Include the errors in the DEBUG level
-# + warn - (Optional) Include the errors in the WARN level
+# + filters - (Optional) Log levels to filter out other than ERROR level
 #
 public type Args record {
     string input;
     string? output;
-    string? debug;
-    string? warn;
+    string? filters;
 };
 
 public function main(*Args options) returns error? {
     string input = options?.input;
     string output = options?.output ?: "FilteredOutput";
-    boolean debug = (options?.debug ?: "false").equalsIgnoreCaseAscii("true") ? true : false;
-    boolean warn = (options?.warn ?: "false").equalsIgnoreCaseAscii("true") ? true : false;
+    string filters = (options?.filters ?: "false").toUpperAscii();
+
+    string[] filterArray = [];
+    if (filters != "FALSE") {
+        string[] filterArrayTemp = regex:split(filters, ",");
+        foreach string filter in filterArrayTemp {
+            filterArray.push(filter.trim());
+        }
+    }
+
+    io:print(filterArray);
 
     string[] pathArray = check file:splitPath(input);
     string fileName = pathArray[pathArray.length() - 1];
@@ -44,14 +52,28 @@ public function main(*Args options) returns error? {
     // Iterates through the stream and prints the content.
     boolean isErrorline = false;
     io:Error? result0 = check lineStream.forEach(function(string val) {
-        if (val.startsWith("TID:") && val.includes("] ERROR {")) {
-            isErrorline = true;
-        } else if (debug && val.startsWith("TID:") && val.includes("] DEBUG {") && val.includes("- Error")) {
-            isErrorline = true;
-        } else if (warn && val.startsWith("TID:") && val.includes(" WARN {")) {
-            isErrorline = true;
-        } else if val.startsWith("TID:") {
-            isErrorline = false;
+        if filterArray.length() == 0 {
+            if (val.startsWith("TID:") && val.includes("] ERROR {")) {
+                isErrorline = true;
+            } else if val.startsWith("TID:") {
+                isErrorline = false;
+            }
+        } else {
+            foreach string level in filterArray {
+                if (val.startsWith("TID:") && val.includes("] ERROR {")) {
+                    isErrorline = true;
+                    break;
+                } else if (val.startsWith("TID:") && val.includes(" " + level + " {")) {
+                    if (level == "DEBUG" && val.includes("- Error")) {
+                        isErrorline = true;
+                    } else if (level != "DEBUG") {
+                        isErrorline = true;
+                    }
+                    break;
+                } else if val.startsWith("TID:") {
+                    isErrorline = false;
+                }
+            }
         }
 
         if isErrorline is true {
