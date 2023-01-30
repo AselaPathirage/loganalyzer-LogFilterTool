@@ -69,7 +69,9 @@ public function main(*Args options) returns error? {
                     } else if (line.includes(" " + level + " {")) {
                         if (isDebugLevelError(line, level) || level != "DEBUG") {
                             isErrorline = true;
+                            break;
                         }
+                        isErrorline = false;
                         break;
                     } else {
                         isErrorline = false;
