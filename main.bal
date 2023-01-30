@@ -15,6 +15,14 @@ public type Args record {
     string? filters;
 };
 
+function isErrorLevel(string line) returns boolean {
+    return line.includes("] ERROR {");
+}
+
+function isDebugLevelError(string line, string level) returns boolean {
+    return level == "DEBUG" && line.includes("- Error");
+}
+
 public function main(*Args options) returns error? {
     string input = options?.input;
     string output = options?.output ?: "FilteredOutput";
@@ -27,8 +35,6 @@ public function main(*Args options) returns error? {
             filterArray.push(filter.trim());
         }
     }
-
-    io:print(filterArray);
 
     string[] pathArray = check file:splitPath(input);
     string fileName = pathArray[pathArray.length() - 1];
@@ -51,34 +57,30 @@ public function main(*Args options) returns error? {
 
     // Iterates through the stream and prints the content.
     boolean isErrorline = false;
-    io:Error? result0 = check lineStream.forEach(function(string val) {
-        if filterArray.length() == 0 {
-            if (val.startsWith("TID:") && val.includes("] ERROR {")) {
-                isErrorline = true;
-            } else if val.startsWith("TID:") {
-                isErrorline = false;
-            }
-        } else {
-            foreach string level in filterArray {
-                if (val.startsWith("TID:") && val.includes("] ERROR {")) {
-                    isErrorline = true;
-                    break;
-                } else if (val.startsWith("TID:") && val.includes(" " + level + " {")) {
-                    if (level == "DEBUG" && val.includes("- Error")) {
+    io:Error? result0 = check lineStream.forEach(function(string line) {
+        if (line.startsWith("TID:")) {
+            if filterArray.length() == 0 {
+                isErrorline = isErrorLevel(line);
+            } else {
+                foreach string level in filterArray {
+                    if (isErrorLevel(line)) {
                         isErrorline = true;
-                    } else if (level != "DEBUG") {
-                        isErrorline = true;
+                        break;
+                    } else if (line.includes(" " + level + " {")) {
+                        if (isDebugLevelError(line, level) || level != "DEBUG") {
+                            isErrorline = true;
+                        }
+                        break;
+                    } else {
+                        isErrorline = false;
                     }
-                    break;
-                } else if val.startsWith("TID:") {
-                    isErrorline = false;
                 }
             }
         }
 
         if isErrorline is true {
             do {
-                check io:fileWriteString(outputPath, val, "APPEND");
+                check io:fileWriteString(outputPath, line, "APPEND");
             } on fail var e {
                 io:println("Error occured in writing to the file. ", e);
             }
@@ -90,9 +92,9 @@ public function main(*Args options) returns error? {
         }
     });
 
-    io:println("*** Errors filtered into the file in ", outputPath);
-
-    if result0 is error {
+    if result0 is io:Error {
         io:println("Error occured in writing to the file.");
     }
+
+    io:println("*** Errors filtered into the file in ", outputPath);
 }
