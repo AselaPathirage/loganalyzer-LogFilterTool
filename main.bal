@@ -58,7 +58,7 @@ public function main(*Args options) returns error? {
     // Iterates through the stream and prints the content.
     boolean isErrorline = false;
     io:Error? result0 = check lineStream.forEach(function(string line) {
-        if (line.startsWith("TID:")) {
+        if (line.includes("TID:")) {
             if filterArray.length() == 0 {
                 isErrorline = isErrorLevel(line);
             } else {
