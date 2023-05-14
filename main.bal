@@ -3,7 +3,7 @@ import ballerina/file;
 import ballerina/regex;
 
 # Passing the default arguments.
-# 
+#
 # + input - Log file path
 # + output - (Optional) Output file folder location
 # + filters - (Optional) Log levels to filter out other than ERROR level
@@ -15,11 +15,11 @@ public type Args record {
 };
 
 function isErrorLevel(string line) returns boolean {
-    return line.includes("] ERROR {");
+    return line.includes(" ERROR ");
 }
 
 function isDebugLevelError(string line, string level) returns boolean {
-    return level == "DEBUG" && line.includes("- Error");
+    return level == "DEBUG" && line.includes("Error");
 }
 
 public function main(*Args options) returns error? {
@@ -65,7 +65,7 @@ public function main(*Args options) returns error? {
                     if (isErrorLevel(line)) {
                         isErrorline = true;
                         break;
-                    } else if (line.includes(" " + level + " {")) {
+                    } else if (line.includes(" " + level + " ")) {
                         if (isDebugLevelError(line, level) || level != "DEBUG") {
                             isErrorline = true;
                             break;
