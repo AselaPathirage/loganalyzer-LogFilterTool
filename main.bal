@@ -2,9 +2,8 @@ import ballerina/io;
 import ballerina/file;
 import ballerina/regex;
 
-# Author - Asela Pathirage (Intern)
-#
 # Passing the default arguments.
+# 
 # + input - Log file path
 # + output - (Optional) Output file folder location
 # + filters - (Optional) Log levels to filter out other than ERROR level

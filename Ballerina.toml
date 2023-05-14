@@ -1,6 +1,6 @@
 [package]
 org = "wso2"
-name = "ISExceptionFilterTool"
+name = "LogFilterTool"
 version = "0.1.0"
 distribution = "2201.3.0"
 
