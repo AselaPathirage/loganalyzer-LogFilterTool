@@ -1,24 +1,33 @@
-# ISExceptionFilterTool
-Filter out exceptions from the log file. 
+# LogFilterTool
 
-Here the ERROR lines and its traces of log file (log filepath should pass as an argument) will be written to a new file.
+The LogFilterTool is designed to filter log records from a log file based on specified log levels and output the filtered records to a new file.
 
-<h2>Arguments</h2>
+By default, logs with the **ERROR** level are filtered out, while the other log levels can be passed as arguments as `filters`.
 
-input - logfile path
+## Arguments
 
-output - (Optional) Output folder location
+`input` - logfile path
 
-filters - (Optional) Log levels divided by commas
+`output` - (Optional) Output folder location
 
-<h2>To run the .bal file</h2>
+`filters` - (Optional) Log levels divided by commas
 
-<code>bal run \<file\> -- --input=\<logFilePath\> --output=\<outputFolderPath\> --filters=\<logLevels\></code>
+## To run the .jar file
 
-<h2>To build</h2>
+```
+bal run <file> --input=<logFilePath> --output=<outputFolderPath> --filters=<logLevels>
+```
 
-<code>bal build</code>
+## To run the .bal file
 
-<h2>To run the .jar file</h2>
+```
+bal run <file> -- --input=<logFilePath> --output=<outputFolderPath> --filters=<logLevels>
+```
 
-<code>bal run \<file\> --input=\<logFilePath\> --output=\<outputFolderPath\> --filters=\<logLevels\></code>
+## To build
+
+```
+bal build
+```
+
+
