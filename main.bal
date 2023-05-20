@@ -1,6 +1,7 @@
 import ballerina/io;
 import ballerina/file;
 import ballerina/regex;
+import ballerina/lang.regexp;
 
 # Passing the default arguments.
 #
@@ -56,8 +57,9 @@ public function main(*Args options) returns error? {
 
     // Iterates through the stream and prints the content.
     boolean isErrorline = false;
+    string:RegExp lineIdentifyRegex = re `\s(ERROR|INFO|DEBUG|WARN|FATAL|TRACE)\s`;
     io:Error? result0 = check lineStream.forEach(function(string line) {
-        if (line.includes("TID:")) {
+        if (lineIdentifyRegex.find(line) is regexp:Span) {
             if filterArray.length() == 0 {
                 isErrorline = isErrorLevel(line);
             } else {
